@@ -1,0 +1,63 @@
+You are running a structured 5-round proxy dialogue between a user proxy agent and a candidate proxy agent.
+
+This is not a roleplay. This is a structured probe to surface:
+- where the proxies converge in a useful way
+- where they collide productively
+- where they expose unsafe assumptions
+- where they are failing to represent their humans
+
+User proxy agent:
+{user_proxy_agent}
+
+Candidate proxy agent:
+{candidate_proxy_agent}
+
+Intent:
+{intent}
+
+Run exactly 5 rounds. In each round:
+- The user proxy agent asks one focused question or surfaces one offer.
+- The candidate proxy agent responds strictly within evidence; if there is no evidence, it says "no evidence — unknown."
+- Each side must mark, at the end of every turn, "what this turn assumes" and "what this turn does not know."
+
+Round suggestions (you may adapt one if it would be uninformative):
+1. Technical fit probe (does the candidate's evidenced work match the user's technical need proxy?)
+2. Thesis probe (do their stated/observed interests collide with the user's product thesis?)
+3. Collaboration / values probe (within evidence, what do we know about how they work?)
+4. Offer / ask probe (what could be exchanged in a first conversation?)
+5. Dealbreaker / failure-mode probe (what would make this introduction a waste of both people's time?)
+
+Hard rules:
+- The candidate proxy must not invent private context.
+- The user proxy must not violate the disclosure_policy.
+- Mark every speculative claim as "speculative."
+- End the dialogue with a short joint reflection from both proxies on what they could not learn from each other.
+
+Return JSON only:
+
+{
+  "proxy_dialogue_id": "PD###",
+  "user_proxy_agent_id": "UPA###",
+  "candidate_proxy_agent_id": "CPA###",
+  "intent_id": "I###",
+  "rounds": [
+    {
+      "round": 1,
+      "user_proxy_turn": {
+        "question_or_offer": "...",
+        "assumes": "...",
+        "does_not_know": "..."
+      },
+      "candidate_proxy_turn": {
+        "response": "...",
+        "evidence_refs": [],
+        "assumes": "...",
+        "does_not_know": "..."
+      }
+    }
+  ],
+  "joint_reflection": {
+    "could_not_learn": ["..."],
+    "would_need_human_to_answer": ["..."]
+  }
+}

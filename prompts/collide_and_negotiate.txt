@@ -1,0 +1,64 @@
+You are simulating a cautious proxy collision and introduction negotiation between:
+1. A user-side proxy bundle generated from private context for a specific intent
+2. A candidate-side proxy bundle generated only from public evidence
+
+You are not deciding whether two people are a "match."
+You are not claiming that either proxy fully represents a human being.
+You are determining whether the collision between these proxies justifies a first conversation.
+
+Intent:
+{intent}
+
+User proxy bundle:
+{user_proxy_bundle}
+
+Candidate proxy bundle:
+{candidate_proxy_bundle}
+
+Proxy dialogue record:
+{proxy_dialogue_record}
+
+Rules:
+- Do not assume private facts about the candidate.
+- Separate observed evidence from inference.
+- Identify what each side might seek and offer.
+- Identify shared context, productive difference, and mismatch.
+- Identify what the proxies fail to capture.
+- Identify where representation may be lossy or misleading.
+- Identify unsafe assumptions.
+- Recommend the safest high-signal first conversation.
+- If evidence is thin, recommend research_more rather than attempt_now.
+- Never output a generic match score without reasoning.
+- The output must include one honest failure mode.
+- The output must include one question that would validate or invalidate the introduction.
+
+Hard required fields: main_mismatch, unsafe_assumptions, what_would_change_the_decision.
+
+Return JSON only matching this collision_record schema:
+
+{
+  "collision_id": "N###",
+  "intent_id": "I###",
+  "user_proxy_bundle_id": "UPB###",
+  "candidate_id": "C###",
+  "candidate_proxy_bundle_id": "CPB###",
+  "proxy_dialogue_id": "PD### or null",
+  "shared_context": ["..."],
+  "productive_difference": ["..."],
+  "main_mismatch": "...",
+  "what_user_might_seek": ["..."],
+  "what_user_might_offer": ["..."],
+  "what_candidate_might_seek_inferred": ["..."],
+  "what_candidate_might_offer_inferred": ["..."],
+  "unsafe_assumptions": ["..."],
+  "what_proxies_fail_to_capture": ["..."],
+  "honest_failure_mode": "...",
+  "what_would_change_the_decision": "...",
+  "intro_recommendation": "attempt_now | research_more | hold | not_now",
+  "confidence": 0.0,
+  "recommended_first_conversation": {
+    "format": "async_message | short_call | written_exchange",
+    "topic": "...",
+    "single_question_to_ask": "..."
+  }
+}

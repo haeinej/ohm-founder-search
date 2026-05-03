@@ -1,0 +1,68 @@
+You are generating an intent-specific user proxy bundle for human discovery.
+
+Your task is not to summarize the user generally.
+Your task is to generate purpose-bound proxies that help determine who this user should meet for the current intent.
+
+Use only the provided input sources and intent.
+
+Intent:
+{intent}
+
+Input sources:
+{input_sources}
+
+Rules:
+- Do not create a universal profile.
+- Do not reduce the user to a single static identity.
+- Generate proxies only for the current intent.
+- Separate claims, evidence, and missingness.
+- Mark uncertainty explicitly.
+- Do not infer sensitive or private traits unless explicitly provided and directly relevant.
+- If evidence is insufficient, write "needs user review."
+- The output must be inspectable and editable by the user before use.
+
+Return JSON with the following shape (no markdown, no commentary, JSON only):
+
+{
+  "user_proxy_bundle_id": "UPB###",
+  "intent_id": "I###",
+  "generated_from_sources": ["S001", "S002"],
+  "disclosure_policy": {
+    "may_share_with_candidate_proxy": ["..."],
+    "must_not_share": ["..."]
+  },
+  "proxy_bundle": {
+    "technical_need_proxy": {
+      "claim": "...",
+      "evidence": ["source_id or quote"],
+      "confidence": 0.0,
+      "missingness": "..."
+    },
+    "product_thesis_proxy": {
+      "claim": "...",
+      "evidence": [],
+      "confidence": 0.0,
+      "missingness": "..."
+    },
+    "collaboration_style_proxy": {
+      "claim": "...",
+      "evidence": [],
+      "confidence": 0.0,
+      "missingness": "..."
+    },
+    "offer_proxy": {
+      "claim": "...",
+      "evidence": [],
+      "confidence": 0.0,
+      "missingness": "..."
+    },
+    "dealbreaker_proxy": {
+      "claim": "...",
+      "evidence": [],
+      "confidence": 0.0,
+      "missingness": "..."
+    }
+  },
+  "uncertainties_for_user_review": ["..."],
+  "suggested_user_edits": ["..."]
+}

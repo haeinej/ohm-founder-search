@@ -1,0 +1,61 @@
+You are generating a public-evidence candidate proxy bundle.
+
+You are not claiming to know this person.
+You may only use the evidence provided below.
+
+Candidate:
+{candidate}
+
+Evidence:
+{candidate_evidence}
+
+Rules:
+- Use only the provided evidence.
+- Separate observed signals from inference.
+- If evidence is insufficient, say "insufficient evidence."
+- Do not infer private motivations.
+- Do not assign high confidence if fewer than two concrete evidence items are provided.
+- Timing and availability must be marked unknown unless direct evidence exists.
+- Every major claim must cite an evidence_id or source_url.
+
+Return JSON only (no markdown, no commentary) with this shape:
+
+{
+  "candidate_proxy_bundle_id": "CPB###",
+  "candidate_id": "C###",
+  "generated_from_evidence": ["E001", "E002"],
+  "proxy_bundle": {
+    "technical_evidence_proxy": {
+      "observed": "...",
+      "inferred": "...",
+      "evidence_refs": ["E001"],
+      "confidence": 0.0
+    },
+    "thesis_interest_proxy": {
+      "observed": "...",
+      "inferred": "...",
+      "evidence_refs": [],
+      "confidence": 0.0
+    },
+    "shipping_execution_proxy": {
+      "observed": "...",
+      "inferred": "...",
+      "evidence_refs": [],
+      "confidence": 0.0
+    },
+    "taste_originality_proxy": {
+      "observed": "...",
+      "inferred": "...",
+      "evidence_refs": [],
+      "confidence": 0.0
+    },
+    "availability_timing_proxy": {
+      "observed": "unknown unless evidence",
+      "inferred": "...",
+      "evidence_refs": [],
+      "confidence": 0.0
+    }
+  },
+  "proxy_confidence": 0.0,
+  "uncertainties": ["..."]
+}

@@ -1,0 +1,43 @@
+You are analyzing the last N collisions/negotiations and outcomes for a single intent, to update the user's working model of who they should meet.
+
+Inputs:
+Intent:
+{intent}
+
+Recent collisions:
+{collisions}
+
+Recent outcomes:
+{outcomes}
+
+User proxy bundle (current):
+{user_proxy_bundle}
+
+Rules:
+- Look at the collision recommendations vs actual outcomes (when outcomes exist).
+- Identify recurring unsafe assumptions across collisions.
+- Identify proxy bundle blind spots (claims with low evidence that keep mattering).
+- Identify candidate-evidence patterns that consistently produced productive conversations.
+- Identify candidate-evidence patterns that consistently led to dead ends.
+- Suggest concrete edits to the user proxy bundle (do NOT auto-apply).
+- Suggest concrete updates to the candidate sourcing strategy.
+- Avoid prescriptions about people. Make prescriptions about *process and proxies.*
+- If outcomes are too few to be statistically meaningful, say so.
+
+Return JSON only:
+
+{
+  "batch_analysis_id": "BA###",
+  "intent_id": "I###",
+  "n_collisions_reviewed": 0,
+  "n_outcomes_reviewed": 0,
+  "recurring_unsafe_assumptions": ["..."],
+  "proxy_bundle_blind_spots": ["..."],
+  "patterns_that_worked": ["..."],
+  "patterns_that_failed": ["..."],
+  "suggested_edits_to_user_proxy_bundle": [
+    {"field": "...", "current": "...", "suggested": "...", "reason": "..."}
+  ],
+  "suggested_sourcing_updates": ["..."],
+  "honest_caveats": ["..."]
+}

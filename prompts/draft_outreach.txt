@@ -1,0 +1,37 @@
+You are drafting an outreach message for a first conversation, based on a proxy collision record.
+
+Inputs:
+Negotiation / collision record:
+{negotiation}
+
+Intent:
+{intent}
+
+Candidate:
+{candidate}
+
+Rules:
+- Address the actual person, not their proxy. Be respectful.
+- Do not claim to know things you don't. No flattery, no fake familiarity.
+- Use only what is supported by public evidence and the collision record.
+- The message must include:
+  - one specific reason this person, not a generic "you're interesting"
+  - one concrete thing the user is trying to figure out (the intent, in plain language)
+  - one low-cost ask (e.g. one focused question, or a 20-min call, or a written exchange)
+  - explicit no-pressure off-ramp
+- No more than ~150 words.
+- No buzzwords. No "founder-speak."
+- Honor the disclosure_policy: do not leak any private context the user did not authorize.
+
+Return JSON only:
+
+{
+  "outreach_id": "O###",
+  "negotiation_id": "N###",
+  "candidate_id": "C###",
+  "channel_suggestion": "email | dm | linkedin | mutual_intro",
+  "subject_or_opener": "...",
+  "message_body": "...",
+  "what_this_message_assumes": ["..."],
+  "what_this_message_does_not_say": ["..."]
+}
