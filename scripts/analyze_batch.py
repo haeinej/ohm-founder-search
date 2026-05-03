@@ -9,7 +9,7 @@ import json
 from utils import (
     STATE_DIR,
     append_jsonl,
-    call_claude_json,
+    call_llm_json,
     find_all_by,
     find_by_id,
     load_env,
@@ -51,7 +51,7 @@ def main() -> None:
 
     client = load_env()
     print(f"[analyze_batch] {len(collisions)} collisions, {len(outcomes)} outcomes for {args.intent}")
-    record = call_claude_json(
+    record = call_llm_json(
         client,
         system_prompt=system_prompt,
         user_message="Run the batch analysis now. JSON only.",

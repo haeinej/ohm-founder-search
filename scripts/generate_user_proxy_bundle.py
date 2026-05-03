@@ -9,7 +9,7 @@ import json
 from utils import (
     STATE_DIR,
     append_jsonl,
-    call_claude_json,
+    call_llm_json,
     find_by_id,
     load_env,
     load_jsonl,
@@ -42,7 +42,7 @@ def main() -> None:
 
     client = load_env()
     print(f"[generate_user_proxy_bundle] calling Claude for intent {args.intent} with {len(sources)} sources...")
-    bundle = call_claude_json(
+    bundle = call_llm_json(
         client,
         system_prompt=system_prompt,
         user_message="Generate the user proxy bundle now. JSON only.",

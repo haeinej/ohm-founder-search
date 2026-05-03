@@ -9,7 +9,7 @@ import json
 from utils import (
     STATE_DIR,
     append_jsonl,
-    call_claude_json,
+    call_llm_json,
     find_by_id,
     find_by_id as _,
     load_env,
@@ -72,7 +72,7 @@ def main() -> None:
 
     client = load_env()
     print(f"[run_proxy_dialogue] calling Claude: {args.user_agent} <-> {args.candidate_agent} on {intent_id}")
-    dialogue = call_claude_json(
+    dialogue = call_llm_json(
         client,
         system_prompt=system_prompt,
         user_message="Run the 5-round dialogue now. JSON only.",

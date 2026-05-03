@@ -57,5 +57,16 @@ Return JSON only (no markdown, no commentary) with this shape:
     }
   },
   "proxy_confidence": 0.0,
-  "uncertainties": ["..."]
+  "uncertainties": ["..."],
+  "suggested_research": [
+    {
+      "url": "https://github.com/candidate-handle",
+      "reason": "GitHub activity would resolve uncertainty about shipping cadence"
+    }
+  ]
 }
+
+The suggested_research field is for evidence gaps where fetching a specific public URL would materially improve a proxy dimension.
+Only include URLs that are genuinely fetchable public pages (GitHub profile/repo, personal site, Substack, blog post).
+Leave the array empty if evidence is already sufficient.
+Do not suggest login-walled URLs (LinkedIn, private X accounts, etc.).

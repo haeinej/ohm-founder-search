@@ -9,7 +9,7 @@ import json
 from utils import (
     STATE_DIR,
     append_jsonl,
-    call_claude_json,
+    call_llm_json,
     find_all_by,
     find_by_id,
     load_env,
@@ -87,7 +87,7 @@ def main() -> None:
 
     client = load_env()
     print(f"[collide_and_negotiate] {args.user_proxy} x {args.candidate} on {args.intent}")
-    record = call_claude_json(
+    record = call_llm_json(
         client,
         system_prompt=system_prompt,
         user_message="Generate the collision_record now. JSON only.",

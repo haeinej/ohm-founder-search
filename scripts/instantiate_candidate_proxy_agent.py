@@ -9,7 +9,7 @@ import json
 from utils import (
     STATE_DIR,
     append_jsonl,
-    call_claude_json,
+    call_llm_json,
     find_by_id,
     load_env,
     next_id,
@@ -39,7 +39,7 @@ def main() -> None:
 
     client = load_env()
     print(f"[instantiate_candidate_proxy_agent] calling Claude for {args.candidate_proxy}...")
-    agent_record = call_claude_json(
+    agent_record = call_llm_json(
         client,
         system_prompt=system_prompt,
         user_message="Instantiate the candidate proxy agent now. JSON only.",

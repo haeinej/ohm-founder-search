@@ -19,10 +19,10 @@ Nothing is global. Nothing is universal. Every proxy is intent-scoped and inspec
 ohm-founder-search/
 ├── input_sources/          # raw private context (text dumps, transcripts, notes)
 ├── state/                  # JSONL truth — every record append-only
-├── prompts/                # all Claude prompts
+├── prompts/                # model-agnostic LLM prompts
 ├── scripts/                # CLI for every step in the pipeline
 ├── credentials/            # service_account.json (gitignored)
-├── .env                    # ANTHROPIC_API_KEY, GOOGLE_SHEETS_ID, ...
+├── .env                    # GROQ_API_KEY, GOOGLE_SHEETS_ID, ...
 └── requirements.txt
 ```
 
@@ -32,8 +32,8 @@ ohm-founder-search/
 pip install -r requirements.txt
 
 # fill in .env
-#   ANTHROPIC_API_KEY=sk-ant-...
-#   GOOGLE_SHEETS_ID=...
+#   GROQ_API_KEY=gsk_...        (get free key at console.groq.com)
+#   GOOGLE_SHEETS_ID=...        (optional — for Sheets sync)
 
 # drop credentials/service_account.json (Google service account JSON key)
 ```
@@ -82,6 +82,6 @@ python scripts/sync_sheets.py --pull
 
 ## Next manual steps
 
-1. Fill in `.env` (`ANTHROPIC_API_KEY`, `GOOGLE_SHEETS_ID`)
+1. Fill in `.env` (`GROQ_API_KEY`, and optionally `GOOGLE_SHEETS_ID`)
 2. Drop `credentials/service_account.json` (Google service account, share the Sheet with its email)
 3. Add your first input sources to `input_sources/` and register them via `add_input_source.py`

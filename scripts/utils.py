@@ -115,7 +115,7 @@ def load_env():
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
 
-def call_claude_json(
+def call_llm_json(
     client,
     system_prompt: str,
     user_message: str,
@@ -149,7 +149,7 @@ def parse_json_response(text: str) -> dict[str, Any]:
     except json.JSONDecodeError:
         m = re.search(r"\{.*\}", s, re.DOTALL)
         if not m:
-            raise ValueError(f"Claude response was not valid JSON:\n{text[:500]}")
+            raise ValueError(f"LLM response was not valid JSON:\n{text[:500]}")
         return json.loads(m.group(0))
 
 
