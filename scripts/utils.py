@@ -97,22 +97,78 @@ def read_prompt(name: str) -> str:
     return p.read_text(encoding="utf-8")
 
 
+class ClaudeCLIClient:
+    """LLM client that shells out to the `claude` CLI (uses Max plan, no API key)."""
+    pass
+
+
 def load_env():
-    """Load .env and return a Groq client. Raises if key missing."""
+    """Load .env and return an LLM client. Priority: claude CLI > Anthropic API > Groq."""
     from dotenv import load_dotenv
+    import subprocess
 
     load_dotenv(ROOT / ".env")
-    key = os.getenv("GROQ_API_KEY", "").strip()
-    if not key:
-        raise RuntimeError(
-            "GROQ_API_KEY is empty in .env — fill it in before running this script."
-        )
-    from groq import Groq
 
-    return Groq(api_key=key)
+    # Check LLM_BACKEND override
+    backend = os.getenv("LLM_BACKEND", "").strip().lower()
+
+    # 1. Claude CLI (Max plan — no API key needed)
+    if backend == "claude_cli" or (not backend and not os.getenv("ANTHROPIC_API_KEY", "").strip()):
+        try:
+            subprocess.run(["claude", "--version"], capture_output=True, check=True, timeout=5)
+            print("[llm] using claude CLI (Max plan)")
+            return ClaudeCLIClient()
+        except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
+            pass
+
+    # 2. Anthropic API
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+    if anthropic_key:
+        import anthropic
+        print("[llm] using Anthropic API")
+        return anthropic.Anthropic(api_key=anthropic_key)
+
+    # 3. Groq
+    groq_key = os.getenv("GROQ_API_KEY", "").strip()
+    if groq_key:
+        from groq import Groq
+        print("[llm] using Groq API")
+        return Groq(api_key=groq_key)
+
+    raise RuntimeError(
+        "No LLM backend available.\n"
+        "Options: install claude CLI (Max plan), set ANTHROPIC_API_KEY, or set GROQ_API_KEY."
+    )
 
 
 GROQ_MODEL = "llama-3.3-70b-versatile"
+CLAUDE_MODEL = "claude-sonnet-4-20250514"
+
+
+def _call_claude_cli(system_prompt: str, user_message: str, max_tokens: int) -> str:
+    """Call claude CLI with --print flag. Returns raw text response."""
+    import subprocess
+
+    full_prompt = f"{system_prompt}\n\n{user_message}"
+
+    result = subprocess.run(
+        ["claude", "--print"],
+        input=full_prompt,
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"claude CLI failed: {result.stderr[:500]}")
+    return result.stdout.strip()
+
+
+def _is_anthropic_client(client) -> bool:
+    return type(client).__module__.startswith("anthropic")
+
+
+def _is_claude_cli(client) -> bool:
+    return isinstance(client, ClaudeCLIClient)
 
 
 def call_llm_json(
@@ -124,16 +180,27 @@ def call_llm_json(
     cache_system: bool = True,
     extra_cache_blocks: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Call Groq LLM and return parsed JSON dict (markdown fences stripped if present)."""
-    resp = client.chat.completions.create(
-        model=GROQ_MODEL,
-        max_tokens=max_tokens,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message},
-        ],
-    )
-    text = resp.choices[0].message.content.strip()
+    """Call LLM (Claude CLI, Anthropic API, or Groq) and return parsed JSON dict."""
+    if _is_claude_cli(client):
+        text = _call_claude_cli(system_prompt, user_message, max_tokens)
+    elif _is_anthropic_client(client):
+        resp = client.messages.create(
+            model=CLAUDE_MODEL,
+            max_tokens=max_tokens,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_message}],
+        )
+        text = resp.content[0].text.strip()
+    else:
+        resp = client.chat.completions.create(
+            model=GROQ_MODEL,
+            max_tokens=max_tokens,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message},
+            ],
+        )
+        text = resp.choices[0].message.content.strip()
     return parse_json_response(text)
 
 
@@ -200,6 +267,11 @@ def check_enrichment_gate(
     if cf < GATE_THRESHOLDS["candidate_fit_score"]:
         return False, f"candidate_fit_score {cf:.2f} < {GATE_THRESHOLDS['candidate_fit_score']}"
     return True, "passed"
+
+
+def needs_rate_limit(client) -> bool:
+    """Returns True if the client needs rate-limit delays (Groq free tier)."""
+    return not _is_claude_cli(client) and not _is_anthropic_client(client)
 
 
 def pretty(record: dict[str, Any]) -> str:
