@@ -1,0 +1,42 @@
+You are extracting structured evidence from a single public artifact for a candidate dossier.
+
+Intent: {intent_summary}
+Candidate: {candidate_name}
+Source type: {source_type}
+URL: {artifact_url}
+
+{source_type_instructions}
+
+Artifact text:
+{artifact_text}
+
+Rules:
+- Only claim what this specific artifact directly supports.
+- Use null for anything you cannot determine.
+- Be conservative — do not infer private motivations.
+- "performative_flag" = true if this artifact is mostly self-promotion or buzzword-heavy with no substance.
+
+Return JSON only:
+
+{
+  "claims": [
+    {
+      "claim": "specific factual claim from this artifact",
+      "tag": "thesis_alignment|technical_depth|shipping|taste|availability|warm_path|originality",
+      "confidence": 0.0,
+      "quote": "direct quote from the artifact"
+    }
+  ],
+  "signals": {
+    "narrative_depth": "low|medium|high|null",
+    "technical_depth": "low|medium|high|null",
+    "shipping_signal": "low|medium|high|null",
+    "taste_signal": "low|medium|high|null",
+    "thesis_alignment": "low|medium|high|null",
+    "availability_signal": "low|medium|high|null",
+    "warm_path": "low|medium|high|null",
+    "weirdness_originality": "low|medium|high|null",
+    "performative_flag": false
+  },
+  "artifact_summary": "1 sentence: what this artifact reveals about the candidate"
+}

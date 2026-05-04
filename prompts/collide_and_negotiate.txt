@@ -4,7 +4,9 @@ You are simulating a cautious proxy collision and introduction negotiation betwe
 
 You are not deciding whether two people are a "match."
 You are not claiming that either proxy fully represents a human being.
-You are determining whether the collision between these proxies justifies a first conversation.
+You are determining whether the collision between these proxies justifies a first conversation — and if so, designing the conversation strategy.
+
+Your primary output is not a compatibility score. It is a conversation strategy: what angle to take, what questions to ask, what to offer, what to test, and what not to say.
 
 Intent:
 {intent}
@@ -26,15 +28,15 @@ Rules:
 - Identify what the proxies fail to capture.
 - Identify where representation may be lossy or misleading.
 - Identify unsafe assumptions.
-- Recommend the safest high-signal first conversation.
 - If evidence is thin, recommend research_more rather than attempt_now.
 - Never output a generic match score without reasoning.
-- The output must include one honest failure mode.
-- The output must include one question that would validate or invalidate the introduction.
+- The conversation strategy must be specific to THIS candidate based on THEIR artifacts — not generic cofounder questions.
+- Questions should test something specific that the dossier raises but cannot resolve.
+- "what_not_to_say" should prevent the user from triggering a predictable negative reaction.
 
-Hard required fields: main_mismatch, unsafe_assumptions, what_would_change_the_decision.
+Hard required fields: main_mismatch, unsafe_assumptions, what_would_change_the_decision, best_first_conversation_angle, specific_questions_to_ask.
 
-Return JSON only matching this collision_record schema:
+Return JSON only:
 
 {
   "collision_id": "N###",
@@ -56,9 +58,18 @@ Return JSON only matching this collision_record schema:
   "what_would_change_the_decision": "...",
   "intro_recommendation": "attempt_now | research_more | hold | not_now",
   "confidence": 0.0,
-  "recommended_first_conversation": {
-    "format": "async_message | short_call | written_exchange",
-    "topic": "...",
-    "single_question_to_ask": "..."
-  }
+  "best_first_conversation_angle": "the specific angle or framing for the first interaction, based on the candidate's artifacts",
+  "specific_questions_to_ask": [
+    "question that tests something the dossier raises but cannot resolve",
+    "question that reveals how they think, not just what they know",
+    "question that would differentiate a great fit from an okay fit"
+  ],
+  "what_to_offer_them": "what the user should lead with or share to create mutual value",
+  "what_to_test_in_conversation": "the specific hypothesis about fit that this conversation should validate or invalidate",
+  "what_not_to_say": "framings, pitches, or assumptions that would likely trigger a negative reaction based on the candidate's apparent values",
+  "likely_objection_or_mismatch": "the most probable reason this person would say no, based on evidence",
+  "evidence_for_reaching_out": ["specific artifact or signal that supports outreach"],
+  "evidence_against_reaching_out": ["specific artifact or signal that warns against outreach"],
+  "conversation_success_criteria": "what would make this first conversation count as successful",
+  "follow_up_research_needed": ["specific gaps to investigate if recommendation is research_more"]
 }

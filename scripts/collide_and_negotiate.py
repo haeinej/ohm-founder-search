@@ -20,7 +20,13 @@ from utils import (
     read_prompt,
 )
 
-REQUIRED_FIELDS = ["main_mismatch", "unsafe_assumptions", "what_would_change_the_decision"]
+REQUIRED_FIELDS = [
+    "main_mismatch",
+    "unsafe_assumptions",
+    "what_would_change_the_decision",
+    "best_first_conversation_angle",
+    "specific_questions_to_ask",
+]
 
 
 def latest_dialogue_for(upa_bundle_id: str | None, candidate_id: str | None) -> dict | None:
@@ -77,6 +83,11 @@ def main() -> None:
 
     pd = latest_dialogue_for(args.user_proxy, args.candidate)
 
+    # Load dossier for structured constraints
+    dossier = find_by_id(
+        STATE_DIR / "candidate_dossiers.jsonl", "candidate_id", args.candidate
+    )
+
     template = read_prompt("collide_and_negotiate.txt")
     system_prompt = template.replace("{intent}", json.dumps(intent, ensure_ascii=False, indent=2))
     system_prompt = system_prompt.replace("{user_proxy_bundle}", json.dumps(upb, ensure_ascii=False, indent=2))
@@ -84,6 +95,21 @@ def main() -> None:
     system_prompt = system_prompt.replace(
         "{proxy_dialogue_record}", json.dumps(pd or {}, ensure_ascii=False, indent=2)
     )
+
+    # Inject structured hypothesis constraints from dossier
+    if dossier:
+        constraints = (
+            "\n\nStructured constraints from candidate dossier:\n"
+            f"Candidate lacks: {json.dumps(dossier.get('candidate_lacks', []))}\n"
+            f"Candidate strong in: {json.dumps(dossier.get('candidate_strong_in', []))}\n"
+            f"Missing evidence: {json.dumps(dossier.get('missing_evidence', []))}\n"
+            f"User seeks (from proxy): {json.dumps(upb.get('proxy_bundle', {}).get('technical_need_proxy', {}).get('claim', ''))}\n"
+            "\nDesign the conversation as a hypothesis test:\n"
+            "The conversation should test whether the candidate's gaps (lacks) and the user's needs (seeks) "
+            "can be resolved through the candidate's strengths (strong_in). "
+            "Every question should test a specific assumption, not gather general information."
+        )
+        system_prompt += constraints
 
     client = load_env()
     print(f"[collide_and_negotiate] {args.user_proxy} x {args.candidate} on {args.intent}")

@@ -136,6 +136,17 @@ TABS: list[tuple[str, list[str]]] = [
             "rubric_adjustments", "state_update_suggestions", "human_approved",
         ],
     ),
+    (
+        "Candidate Dossiers",
+        [
+            "dossier_id", "candidate_id", "intent_id", "root_url",
+            "root_source_type", "source_urls", "source_types",
+            "artifact_count", "summary", "build_signal", "thinking_signal",
+            "taste_signal", "shipping_signal", "thesis_alignment",
+            "missing_evidence", "dossier_quality_score", "candidate_fit_score",
+            "created_at",
+        ],
+    ),
 ]
 
 

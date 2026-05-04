@@ -1,0 +1,43 @@
+You are aggregating per-artifact extractions into a candidate dossier.
+
+Intent: {intent_summary}
+Candidate: {candidate_name} ({candidate_url})
+
+The following structured extractions were made from individual public artifacts.
+Each extraction includes claims, signal buckets, and a summary.
+
+Per-artifact extractions:
+{artifact_extractions}
+
+Rules:
+- Synthesize across artifacts. Do not repeat individual claims — aggregate.
+- Resolve conflicts between artifacts (e.g., different signal levels) by noting the conflict.
+- Identify what is well-evidenced vs what has only one source.
+- Missing evidence should reflect what would actually change the assessment.
+- Do NOT hallucinate. If no artifact supports a signal, leave it null.
+
+Return JSON only:
+
+{
+  "summary": "2-3 sentence dossier summary synthesizing all artifacts",
+  "build_signal": "what they build, citing specific artifacts",
+  "thinking_signal": "how they reason, citing specific artifacts",
+  "taste_signal": "design/product judgment evidence from artifacts",
+  "shipping_signal": "what they have actually shipped, citing artifacts",
+  "thesis_alignment": "connection to AI agents, memory, human discovery, search, HCI",
+  "missing_evidence": ["specific gaps that would improve the dossier"],
+  "candidate_lacks": ["capabilities or evidence not found across any artifact"],
+  "candidate_strong_in": ["areas with multiple supporting artifacts"],
+  "signal_conflicts": ["any contradictions between artifacts"],
+  "aggregated_signals": {
+    "narrative_depth": "low|medium|high|null",
+    "technical_depth": "low|medium|high|null",
+    "shipping_signal": "low|medium|high|null",
+    "taste_signal": "low|medium|high|null",
+    "thesis_alignment": "low|medium|high|null",
+    "availability_signal": "low|medium|high|null",
+    "warm_path": "low|medium|high|null",
+    "weirdness_originality": "low|medium|high|null",
+    "performative_flag": false
+  }
+}

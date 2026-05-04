@@ -43,11 +43,36 @@ def main() -> None:
     ]
     current_upb = upbs[-1] if upbs else {}
 
+    # Build outcome provenance by joining outcomes with candidate + dossier records
+    outcome_provenance = []
+    for o in outcomes:
+        cand = find_by_id(STATE_DIR / "candidates.jsonl", "candidate_id", o.get("candidate_id"))
+        dossier = find_by_id(STATE_DIR / "candidate_dossiers.jsonl", "candidate_id", o.get("candidate_id"))
+        outcome_provenance.append({
+            "outcome_id": o.get("outcome_id"),
+            "candidate_id": o.get("candidate_id"),
+            "conversation_quality": o.get("conversation_quality"),
+            "search_query": o.get("search_query", cand.get("search_query", "") if cand else ""),
+            "source_mode": o.get("source_mode", cand.get("source_mode", "") if cand else ""),
+            "primary_source_type": o.get("primary_source_type", ""),
+            "source_types": o.get("source_types", []),
+            "artifact_count": o.get("artifact_count", 0),
+            "pre_proxy_scores": o.get("pre_proxy_scores", {}),
+            "evidence_tags": o.get("evidence_tags", []),
+            "what_was_overvalued": o.get("what_was_overvalued", ""),
+            "what_was_undervalued": o.get("what_was_undervalued", ""),
+            "what_source_was_most_predictive": o.get("what_source_was_most_predictive", ""),
+            "conversation_strategy_quality": o.get("conversation_strategy_quality", ""),
+            "dossier_quality_score": dossier.get("dossier_quality_score") if dossier else None,
+            "candidate_fit_score": dossier.get("candidate_fit_score") if dossier else None,
+        })
+
     template = read_prompt("analyze_batch.txt")
     system_prompt = template.replace("{intent}", json.dumps(intent, ensure_ascii=False, indent=2))
     system_prompt = system_prompt.replace("{collisions}", json.dumps(collisions, ensure_ascii=False, indent=2))
     system_prompt = system_prompt.replace("{outcomes}", json.dumps(outcomes, ensure_ascii=False, indent=2))
     system_prompt = system_prompt.replace("{user_proxy_bundle}", json.dumps(current_upb, ensure_ascii=False, indent=2))
+    system_prompt = system_prompt.replace("{outcome_provenance}", json.dumps(outcome_provenance, ensure_ascii=False, indent=2))
 
     client = load_env()
     print(f"[analyze_batch] {len(collisions)} collisions, {len(outcomes)} outcomes for {args.intent}")

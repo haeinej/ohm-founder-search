@@ -10,11 +10,14 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 
 import gspread
 from dotenv import load_dotenv
-from google.oauth2.service_account import Credentials
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials as OAuthCredentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 
 from utils import ROOT, STATE_DIR, load_jsonl
 
@@ -22,6 +25,10 @@ SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive",
 ]
+
+CREDS_DIR = Path.home() / ".config" / "ohm"
+CREDS_PATH = CREDS_DIR / "google_credentials.json"
+TOKEN_PATH = CREDS_DIR / "google_token.json"
 
 # Tab name -> (jsonl filename, id field)
 TABS: list[tuple[str, str, str]] = [
@@ -31,26 +38,45 @@ TABS: list[tuple[str, str, str]] = [
     ("Candidates", "candidates.jsonl", "candidate_id"),
     ("Evidence", "evidence.jsonl", "evidence_id"),
     ("Candidate Proxy Bundles", "candidate_proxy_bundles.jsonl", "candidate_proxy_bundle_id"),
-    ("Proxy Agents", "proxy_agents.jsonl", "user_proxy_agent_id"),
-    ("Proxy Dialogues", "proxy_dialogues.jsonl", "proxy_dialogue_id"),
-    ("Collisions", "collisions.jsonl", "collision_id"),
+    ("Proxy Agents", "proxy_agents.jsonl", "proxy_agent_id"),
+    ("Proxy Dialogues", "proxy_dialogues.jsonl", "dialogue_id"),
+    ("Collisions / Negotiations", "collisions.jsonl", "collision_id"),
     ("Outcomes", "outcomes.jsonl", "outcome_id"),
     ("Batch Analysis", "batch_analyses.jsonl", "batch_analysis_id"),
+    ("Candidate Dossiers", "candidate_dossiers.jsonl", "dossier_id"),
 ]
+
+
+def get_oauth_credentials() -> OAuthCredentials:
+    """Reuse the same OAuth flow as setup_sheets.py."""
+    CREDS_DIR.mkdir(parents=True, exist_ok=True)
+
+    if TOKEN_PATH.exists():
+        creds = OAuthCredentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
+        if creds and creds.valid:
+            return creds
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+            TOKEN_PATH.write_text(creds.to_json())
+            return creds
+
+    if not CREDS_PATH.exists():
+        print("Google OAuth credentials not found.")
+        print(f"Run setup_sheets.py first, or download credentials to: {CREDS_PATH}")
+        sys.exit(1)
+
+    flow = InstalledAppFlow.from_client_secrets_file(str(CREDS_PATH), SCOPES)
+    creds = flow.run_local_server(port=0)
+    TOKEN_PATH.write_text(creds.to_json())
+    return creds
 
 
 def get_client():
     load_dotenv(ROOT / ".env")
-    sa_path = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE", "credentials/service_account.json")
-    sa_path = Path(sa_path)
-    if not sa_path.is_absolute():
-        sa_path = ROOT / sa_path
-    if not sa_path.exists():
-        raise SystemExit(f"service account file not found: {sa_path}")
     sheet_id = os.getenv("GOOGLE_SHEETS_ID", "").strip()
     if not sheet_id:
-        raise SystemExit("GOOGLE_SHEETS_ID not set in .env")
-    creds = Credentials.from_service_account_file(str(sa_path), scopes=SCOPES)
+        raise SystemExit("GOOGLE_SHEETS_ID not set in .env — run setup_sheets.py first")
+    creds = get_oauth_credentials()
     gc = gspread.authorize(creds)
     return gc.open_by_key(sheet_id)
 

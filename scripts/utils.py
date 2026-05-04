@@ -153,6 +153,55 @@ def parse_json_response(text: str) -> dict[str, Any]:
         return json.loads(m.group(0))
 
 
+# ---------------------------------------------------------------------------
+# Dossier quality + candidate fit scoring
+# ---------------------------------------------------------------------------
+
+DOSSIER_QUALITY_WEIGHTS = {
+    "artifact_count": 0.25,
+    "source_diversity": 0.20,
+    "personal_site_root": 0.20,
+    "build_artifact": 0.15,
+    "writing_artifact": 0.10,
+    "freshness": 0.10,
+}
+
+CANDIDATE_FIT_WEIGHTS = {
+    "thesis_alignment": 0.20,
+    "shipping_signal": 0.20,
+    "technical_depth": 0.15,
+    "narrative_depth": 0.15,
+    "taste_signal": 0.10,
+    "availability_signal": 0.10,
+    "warm_path": 0.05,
+    "weirdness_originality": 0.05,
+}
+
+GATE_THRESHOLDS = {
+    "dossier_quality_score": 0.3,
+    "candidate_fit_score": 0.2,
+}
+
+
+def check_enrichment_gate(
+    candidate: dict[str, Any], dossier: dict[str, Any] | None
+) -> tuple[bool, str]:
+    """Check if candidate passes the review gate for proxy generation.
+    Returns (passed, reason_string).
+    Passes if dossier exists AND scores above thresholds, OR human_override."""
+    if candidate.get("human_override"):
+        return True, "human_override"
+    if dossier is None:
+        return False, "no dossier — run enrich_candidates.py first"
+    dq = dossier.get("dossier_quality_score", 0)
+    cf = dossier.get("candidate_fit_score", 0)
+    if dq < GATE_THRESHOLDS["dossier_quality_score"]:
+        return False, f"dossier_quality_score {dq:.2f} < {GATE_THRESHOLDS['dossier_quality_score']}"
+    if cf < GATE_THRESHOLDS["candidate_fit_score"]:
+        return False, f"candidate_fit_score {cf:.2f} < {GATE_THRESHOLDS['candidate_fit_score']}"
+    return True, "passed"
+
+
 def pretty(record: dict[str, Any]) -> str:
     return json.dumps(record, indent=2, ensure_ascii=False)
 

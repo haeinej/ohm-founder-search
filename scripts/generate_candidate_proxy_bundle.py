@@ -22,6 +22,7 @@ from utils import (
     STATE_DIR,
     append_jsonl,
     call_llm_json,
+    check_enrichment_gate,
     find_all_by,
     find_by_id,
     load_env,
@@ -87,11 +88,27 @@ def main() -> None:
         action="store_true",
         help="enable research loop: fetch suggested_research URLs and re-run up to 2 rounds",
     )
+    p.add_argument(
+        "--force",
+        action="store_true",
+        help="bypass dossier quality gate",
+    )
     args = p.parse_args()
 
     cand = find_by_id(STATE_DIR / "candidates.jsonl", "candidate_id", args.candidate)
     if not cand:
         raise SystemExit(f"candidate {args.candidate} not found")
+
+    # Dossier quality gate
+    dossier = find_by_id(
+        STATE_DIR / "candidate_dossiers.jsonl", "candidate_id", args.candidate
+    )
+    passed, reason = check_enrichment_gate(cand, dossier)
+    if not passed and not args.force:
+        raise SystemExit(
+            f"gate blocked: {reason}\n"
+            "Run enrich_candidates.py first, or use --force to override."
+        )
 
     evidence = find_all_by(STATE_DIR / "evidence.jsonl", "candidate_id", args.candidate)
     if not evidence:

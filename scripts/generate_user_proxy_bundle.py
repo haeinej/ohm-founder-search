@@ -21,9 +21,17 @@ from utils import (
 )
 
 
+def truncate_source(text: str, max_chars: int = 1500) -> str:
+    """Truncate a rendered source to stay within token budget."""
+    if len(text) <= max_chars:
+        return text
+    return text[:max_chars] + "\n... (truncated)"
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description="Generate user proxy bundle.")
     p.add_argument("--intent", required=True, help="intent_id, e.g. I001")
+    p.add_argument("--max-sources", type=int, default=20, help="max input sources to include")
     args = p.parse_args()
 
     intent = find_by_id(STATE_DIR / "intents.jsonl", "intent_id", args.intent)
@@ -34,7 +42,8 @@ def main() -> None:
     if not sources:
         raise SystemExit("no input sources registered. Run add_input_source.py first.")
 
-    rendered_sources = "\n\n".join(render_input_source(s) for s in sources)
+    sources = sources[:args.max_sources]
+    rendered_sources = "\n\n".join(truncate_source(render_input_source(s)) for s in sources)
 
     template = read_prompt("generate_user_proxy_bundle.txt")
     system_prompt = template.replace("{intent}", json.dumps(intent, ensure_ascii=False, indent=2))
