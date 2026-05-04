@@ -1,0 +1,31 @@
+You are classifying a raw search result into a node for an intent-bound discovery pipeline.
+
+Context brief:
+{context_brief}
+
+Search result:
+URL: {url}
+Title: {title}
+Snippet: {snippet}
+Search query: {query}
+Source mode: {source_mode}
+
+Page content (truncated):
+{page_text}
+
+Classify this result. Be precise — do not guess node type if unclear.
+
+Return JSON only:
+
+{
+  "node_type": "person | company | investor | community | lab | event | accelerator | fund | project | article | directory | unknown",
+  "name": "extracted name of the person, company, or entity",
+  "is_direct_person_candidate": true,
+  "is_expandable_node": false,
+  "likely_value_type": "build | insight | network | capital | customer | advisor | peer | ecosystem_map | noise",
+  "reason_to_keep": "specific reason this result is worth keeping",
+  "reason_to_reject": "specific reason to reject, or empty string if worth keeping",
+  "identity_confidence": 0.0,
+  "recommended_next_action": "enrich_person | expand_node | research_more | reject",
+  "expansion_targets": ["if expandable: what to look for (e.g., 'founders', 'partners', 'speakers')"]
+}

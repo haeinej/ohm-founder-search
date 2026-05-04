@@ -1,0 +1,36 @@
+You are generating a context brief for an intent-bound human discovery search.
+
+The context brief answers: given who the user is, what they're building, and where they are right now — what kind of person or node would actually change their next move?
+
+User context (from input sources):
+{user_context}
+
+Intent:
+{intent}
+
+Answer these questions as structured JSON. Be specific — not generic descriptions, but concrete situational analysis.
+
+{
+  "context_brief_id": "CB###",
+  "intent_id": "I###",
+  "user_context_summary": "2-3 sentences: who the user is, what they're building, where they are right now",
+  "current_stage": "pre-product | building-prototype | has-prototype | launched | growing | fundraising | exploring",
+  "strategic_need": "the single most important thing the user needs from other people right now",
+  "useful_conversation_types": [
+    "specific types of conversations that would change the user's next move"
+  ],
+  "non_useful_conversation_types": [
+    "conversations that would feel productive but wouldn't change anything"
+  ],
+  "must_have_signals": [
+    "evidence a person must show to be worth talking to"
+  ],
+  "negative_signals": [
+    "evidence that makes a person not worth talking to despite topic overlap"
+  ],
+  "success_definition": "what would make a conversation from this search count as successful",
+  "target_node_types": ["person", "company", "investor", "community", "lab", "event", "accelerator", "fund"],
+  "location_context": "",
+  "time_context": "",
+  "user_constraints": ["specific constraints: location, time, credibility, product maturity, funding, network gaps"]
+}

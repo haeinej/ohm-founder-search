@@ -44,6 +44,11 @@ TABS: list[tuple[str, str, str]] = [
     ("Outcomes", "outcomes.jsonl", "outcome_id"),
     ("Batch Analysis", "batch_analyses.jsonl", "batch_analysis_id"),
     ("Candidate Dossiers", "candidate_dossiers.jsonl", "dossier_id"),
+    ("Nodes", "nodes.jsonl", "node_id"),
+    ("Context Briefs", "context_briefs.jsonl", "context_brief_id"),
+    ("Search Strategies", "search_strategies.jsonl", "search_strategy_id"),
+    ("Position Dossiers", "position_dossiers.jsonl", "position_dossier_id"),
+    ("Batch Reflections", "batch_reflections.jsonl", "batch_reflection_id"),
 ]
 
 

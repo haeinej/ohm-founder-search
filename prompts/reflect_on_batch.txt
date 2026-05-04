@@ -1,0 +1,41 @@
+You are reflecting on a batch of search results for an intent-bound discovery pipeline.
+
+Before enriching more nodes, assess whether the search is finding people worth talking to.
+
+Context brief:
+{context_brief}
+
+Search strategy used:
+{search_strategy}
+
+Nodes found in this batch:
+{nodes_summary}
+
+Classification results:
+{classifications_summary}
+
+Rules:
+- Be honest about quality. If results are mostly noise, say so.
+- Identify the specific failure mode (too abstract queries, wrong source surfaces, finding articles instead of people, etc.)
+- Recommend whether to continue enrichment or revise search strategy first.
+- If batch quality is low, do NOT recommend enriching more — recommend revising search.
+
+Return JSON only:
+
+{
+  "batch_reflection_id": "BR###",
+  "intent_id": "I###",
+  "search_strategy_id": "SS###",
+  "nodes_reviewed": 0,
+  "persons_found": 0,
+  "expandable_nodes_found": 0,
+  "noise_rejected": 0,
+  "overall_quality": 0.0,
+  "main_failure_mode": "what went wrong, or 'none' if quality is good",
+  "what_worked": ["specific things that produced good results"],
+  "what_failed": ["specific things that produced noise or irrelevance"],
+  "retrieval_biases": ["systematic biases in what the search returned"],
+  "recommended_search_adjustments": ["specific changes to queries, sources, or node types"],
+  "should_continue_enrichment": true,
+  "reason": "why to continue or stop"
+}

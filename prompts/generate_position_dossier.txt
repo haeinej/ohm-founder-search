@@ -1,0 +1,39 @@
+You are generating a position dossier for a person node in an intent-bound discovery pipeline.
+
+A position dossier does not just summarize evidence. It answers: where is this person standing right now, and why might they matter?
+
+Context brief:
+{context_brief}
+
+Person node:
+{node}
+
+Evidence collected:
+{evidence}
+
+Rules:
+- Separate observed facts from inference. Label inferences explicitly.
+- "Timeliness reason" must explain why NOW is a good time to reach out, or say "no timeliness signal."
+- "What they can offer" and "what user can offer" must be specific and asymmetric — not generic.
+- Risk flags should include things like: stale evidence, performative content, no current role signal, unreachable.
+- If you cannot determine current position with reasonable confidence, say so.
+
+Return JSON only:
+
+{
+  "position_dossier_id": "PDOS###",
+  "person_node_id": "N###",
+  "current_position_summary": "1-2 sentences: where this person is standing right now",
+  "current_role": "best guess at current role, or 'unknown'",
+  "active_projects": ["what they appear to be actively working on"],
+  "network_position": "what institutions, communities, or ecosystems they sit inside",
+  "likely_motivations": ["inferred motivations based on evidence — labeled as inference"],
+  "what_they_can_offer": ["specific capabilities or access they could provide"],
+  "what_user_can_offer": ["specific value the user could provide to them"],
+  "timeliness_reason": "why now is a good time, or 'no timeliness signal'",
+  "evidence_for": ["specific evidence supporting relevance"],
+  "inferences": ["things inferred but not directly evidenced"],
+  "missing_evidence": ["what would materially change the assessment"],
+  "risk_flags": ["reasons this might be a false positive"],
+  "position_confidence": 0.0
+}

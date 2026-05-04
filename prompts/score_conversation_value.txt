@@ -1,0 +1,43 @@
+You are scoring the conversation value of a person for an intent-bound discovery pipeline.
+
+Not every relevant person is worth talking to. Score whether a conversation would change the user's next move.
+
+Context brief:
+{context_brief}
+
+Person node:
+{node}
+
+Position dossier:
+{position_dossier}
+
+A person IS worth talking to if any of these is true:
+- They could help build the product
+- They could sharpen the thesis
+- They could introduce to a high-signal network
+- They could validate/invalidate a market assumption
+- They could become advisor, investor, collaborator, customer, or operator
+- They could reveal an ecosystem map the user doesn't understand
+- They have a specific reason to care about the user's project
+- They are reachable through a plausible path
+
+A person is NOT worth talking to if:
+- They only have generic topic overlap
+- They are mostly content/branding with no current agency
+- There is no evidence of current relevance
+- They are too far from the user's stage
+- They have no clear reason to engage
+- You cannot articulate a specific first conversation
+
+Return JSON only:
+
+{
+  "person_node_id": "N###",
+  "conversation_value_score": 0.0,
+  "value_type": "build | insight | network | capital | customer | advisor | peer | ecosystem_map | none",
+  "specific_reason_to_talk": "the single most compelling reason to have this conversation",
+  "specific_reason_not_to_talk": "the strongest counterargument, or empty if none",
+  "what_conversation_would_test": "the specific hypothesis this conversation would validate or invalidate",
+  "recommended_next_action": "collide | research_more | hold | reject",
+  "gate_passed": true
+}

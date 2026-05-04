@@ -1,0 +1,46 @@
+You are expanding a non-person node to extract relevant people for an intent-bound discovery pipeline.
+
+Context brief:
+{context_brief}
+
+Node to expand:
+{node}
+
+Page content from the node's URL (truncated):
+{page_text}
+
+Additional pages found (truncated):
+{expansion_pages}
+
+Based on the node type, extract people who are relevant to the intent.
+
+For companies: founders, CEO/CTO/CPO, head of product, AI/data lead, founding engineers
+For funds: relevant partners, scouts, portfolio founders
+For accelerators: program leads, portfolio founders, mentors, active alumni
+For events: speakers, organizers
+For labs: principal investigators, research engineers, PhD students
+For communities: organizers, prominent members
+For projects: creators, maintainers, contributors
+
+Return JSON only:
+
+{
+  "expanded_from_node_id": "N###",
+  "people_found": [
+    {
+      "name": "person name",
+      "role": "their role at/in the node",
+      "url": "personal URL if found, otherwise empty",
+      "evidence": "what from the page supports this person being relevant",
+      "relevance_reason": "why this person specifically matters for the intent"
+    }
+  ],
+  "context_nodes": [
+    {
+      "name": "related org/event/community found during expansion",
+      "url": "",
+      "node_type": "",
+      "why_relevant": ""
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+You are generating a search strategy for an intent-bound human discovery pipeline.
+
+The search strategy decomposes the intent into search buckets — each targeting a different type of node through different source surfaces.
+
+Context brief:
+{context_brief}
+
+Intent:
+{intent}
+
+Rules:
+- Each bucket should target a specific node type and explain why that type matters for this intent.
+- Query templates should be written as natural language (Exa performs best with descriptive queries, not keywords).
+- Reject criteria should be specific and actionable.
+- Expand criteria define when a result is not a direct person candidate but should be expanded (e.g., find the founders of this company).
+- Source surfaces should be specific platforms or content types.
+- Do NOT create more than 5 buckets. Focus on the highest-leverage search paths.
+
+Return JSON only:
+
+{
+  "search_strategy_id": "SS###",
+  "intent_id": "I###",
+  "context_brief_id": "CB###",
+  "search_buckets": [
+    {
+      "bucket_name": "descriptive name",
+      "target_node_types": ["person", "company", "fund", "community", "lab", "event"],
+      "why_this_bucket_matters": "specific reason this search path matters for the intent",
+      "source_surfaces": ["GitHub", "Substack", "personal sites", "accelerator portfolios", "event pages"],
+      "source_mode": "narrative_first | github_first | artifact_first | broad | verification",
+      "query_templates": [
+        "natural language query written for Exa deep search"
+      ],
+      "reject_criteria": [
+        "specific reason to immediately reject a result from this bucket"
+      ],
+      "expand_criteria": [
+        "when to expand this node instead of treating it as a direct candidate"
+      ]
+    }
+  ],
+  "global_reject_criteria": [
+    "criteria that apply across all buckets"
+  ],
+  "priority_order": ["bucket names in order of expected value"]
+}
