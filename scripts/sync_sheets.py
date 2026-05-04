@@ -49,6 +49,9 @@ TABS: list[tuple[str, str, str]] = [
     ("Search Strategies", "search_strategies.jsonl", "search_strategy_id"),
     ("Position Dossiers", "position_dossiers.jsonl", "position_dossier_id"),
     ("Batch Reflections", "batch_reflections.jsonl", "batch_reflection_id"),
+    ("Intent-Bound Profiles", "intent_bound_user_profiles.jsonl", "intent_bound_profile_id"),
+    ("Search Lenses", "search_lenses.jsonl", "search_lens_id"),
+    ("Derived Collision Variables", "derived_collision_variables.jsonl", "derived_variable_set_id"),
 ]
 
 

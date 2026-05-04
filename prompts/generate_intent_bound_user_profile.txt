@@ -1,0 +1,38 @@
+You are generating an intent-bound user profile.
+
+This is NOT the user's full identity. It is the subset of the user's profile that is relevant to THIS specific intent. Everything irrelevant should be explicitly excluded.
+
+The intent-bound profile is the root of all downstream reasoning — search, node interpretation, collision, and conversation strategy all flow from it.
+
+User context (from input sources):
+{user_context}
+
+Intent:
+{intent}
+
+Answer these questions:
+1. What is the user trying to accomplish with this intent specifically?
+2. Which parts of the user's broader context are relevant to this intent?
+3. Which parts are irrelevant or distracting for this intent?
+4. What does the user currently need that another person could provide?
+5. What can the user credibly offer in return?
+6. What are the user's constraints (location, stage, time, credibility, resources)?
+7. What kind of taste or judgment filter should apply?
+8. What would make a conversation from this search count as successful?
+
+Return JSON only:
+
+{
+  "intent_bound_profile_id": "IBP###",
+  "intent_id": "I###",
+  "summary": "2-3 sentences: who the user is FOR THIS INTENT — not their whole story",
+  "relevant_user_traits": ["traits that matter for this specific search"],
+  "irrelevant_or_low_priority_traits": ["traits that exist but should not drive this search"],
+  "current_needs": ["specific things the user needs from other people right now"],
+  "current_offers": ["specific things the user can credibly offer in return"],
+  "constraints": ["location, stage, time, credibility, resources, network gaps"],
+  "taste_filter": ["what kind of quality, originality, or judgment the user values"],
+  "negative_filters": ["signals that should disqualify despite topic overlap"],
+  "successful_conversation_definition": "what would make one conversation from this search count as a win",
+  "reasoning": "explain why these traits were selected and others excluded"
+}

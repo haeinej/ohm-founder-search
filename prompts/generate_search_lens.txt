@@ -1,0 +1,55 @@
+You are generating a search lens from an intent-bound user profile.
+
+The search lens defines what the system should look for, where, and what variables might matter — BEFORE seeing any search results.
+
+Intent-bound user profile:
+{intent_bound_profile}
+
+Intent:
+{intent}
+
+The search lens should answer:
+1. What kinds of people, institutions, communities, or artifacts might matter for this intent?
+2. Which source surfaces are likely to contain them?
+3. What positive signals would indicate relevance?
+4. What negative signals would indicate noise?
+5. What variables MIGHT matter for evaluating results? (These are hypotheses, not certainties.)
+
+Rules:
+- Initial variable hypotheses are guesses. They will be refined after seeing results.
+- Max 8 variable hypotheses. Each must explain why it might matter.
+- Query strategies should be natural language (Exa performs best with descriptive queries).
+- Do not over-specify. The lens should guide attention, not constrain it.
+
+Return JSON only:
+
+{
+  "search_lens_id": "SL###",
+  "intent_id": "I###",
+  "intent_bound_profile_id": "IBP###",
+  "who_or_what_might_matter": [
+    "types of people, institutions, or artifacts that could change the user's next move"
+  ],
+  "source_surfaces": [
+    {"surface": "GitHub/Substack/personal sites/accelerator pages/etc", "why": "what it reveals"}
+  ],
+  "positive_signals": ["evidence that makes a result worth pursuing"],
+  "negative_signals": ["evidence that makes a result noise despite topic overlap"],
+  "initial_variable_hypotheses": [
+    {
+      "name": "variable name",
+      "definition": "what this variable measures in plain language",
+      "why_it_might_matter": "why this variable could be decision-relevant for this intent",
+      "source_surfaces_that_may_reveal_it": ["where to find evidence for this variable"]
+    }
+  ],
+  "query_strategies": [
+    {
+      "target": "what kind of result this query targets",
+      "source_mode": "narrative_first | github_first | artifact_first | broad",
+      "query": "natural language query for Exa deep search"
+    }
+  ],
+  "reject_criteria": ["when to immediately reject a result"],
+  "reasoning": "explain the logic behind this lens"
+}

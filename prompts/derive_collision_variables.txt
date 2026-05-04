@@ -1,0 +1,55 @@
+You are deriving collision variables for a specific possible encounter.
+
+These variables are NOT universal. They emerge from the interface between:
+- The user's intent-bound state
+- The external node's current position
+- The evidence available
+- The possible conversation
+
+Intent-bound user profile:
+{intent_bound_profile}
+
+Node:
+{node}
+
+Position profile:
+{position_profile}
+
+Evidence:
+{evidence}
+
+Rules:
+- Maximum 5 variables. Each must pass 4 tests:
+  1. Comes from the intent-bound profile (not generic matching)
+  2. Relevant to the current decision (not interesting-but-irrelevant)
+  3. Defined in plain language (not jargon or model poetry)
+  4. Linked to evidence or explicitly marked speculative
+- If a variable fails these tests, reject it.
+- Identify the top uncertainty, highest-upside variable, and most dangerous assumption.
+- These variables will be used to design the conversation strategy.
+
+Return JSON only:
+
+{
+  "derived_variable_set_id": "DVS###",
+  "intent_id": "I###",
+  "intent_bound_profile_id": "IBP###",
+  "node_id": "NODE###",
+  "position_profile_id": "POS###",
+  "variables": [
+    {
+      "name": "plain-language variable name",
+      "definition": "what this variable measures and why",
+      "why_it_matters_for_this_intent": "connection to the user's specific needs/offers",
+      "evidence_for": ["specific evidence supporting this variable being positive"],
+      "evidence_against": ["specific evidence suggesting this variable is negative or unclear"],
+      "speculative_assumptions": ["things assumed without direct evidence"],
+      "confidence": 0.0,
+      "decision_weight": 0.0
+    }
+  ],
+  "top_uncertainty": "the single biggest unknown that would change the decision",
+  "highest_upside_variable": "the variable that, if positive, would make this person most valuable",
+  "most_dangerous_assumption": "the inference most likely to be wrong",
+  "recommended_conversation_test": "the specific thing a first conversation should test"
+}

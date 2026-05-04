@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Batch reflection — assess search quality before enriching more. Stop if results are noise."""
+"""Batch reflection — assess search quality before enriching more.
+
+Uses intent-bound profile and search lens (not generic context brief).
+Includes variable-generation critique.
+"""
 
 from __future__ import annotations
 
@@ -20,58 +24,58 @@ from utils import (
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Reflect on batch quality before enriching more.")
+    p = argparse.ArgumentParser(description="Reflect on batch quality.")
     p.add_argument("--intent", required=True)
     args = p.parse_args()
 
-    cb_list = [b for b in load_jsonl(STATE_DIR / "context_briefs.jsonl") if b.get("intent_id") == args.intent]
-    cb = cb_list[-1] if cb_list else {}
+    ibp_list = [x for x in load_jsonl(STATE_DIR / "intent_bound_user_profiles.jsonl") if x.get("intent_id") == args.intent]
+    ibp = ibp_list[-1] if ibp_list else {}
 
-    ss_list = [s for s in load_jsonl(STATE_DIR / "search_strategies.jsonl") if s.get("intent_id") == args.intent]
-    ss = ss_list[-1] if ss_list else {}
+    sl_list = [x for x in load_jsonl(STATE_DIR / "search_lenses.jsonl") if x.get("intent_id") == args.intent]
+    sl = sl_list[-1] if sl_list else {}
 
     nodes = [n for n in load_jsonl(STATE_DIR / "nodes.jsonl") if n.get("intent_id") == args.intent]
 
     if not nodes:
-        print("no nodes to reflect on — run classify_search_result.py first")
+        print("no nodes to reflect on")
         return
 
-    # Summarize nodes
-    type_counts: dict[str, int] = {}
+    # Summarize by node function
+    func_counts: dict[str, int] = {}
     action_counts: dict[str, int] = {}
     for n in nodes:
-        nt = n.get("node_type", "unknown")
-        type_counts[nt] = type_counts.get(nt, 0) + 1
-        act = n.get("recommended_next_action", "unknown")
+        for f in n.get("node_function", []):
+            func_counts[f] = func_counts.get(f, 0) + 1
+        act = n.get("next_action", "unknown")
         action_counts[act] = action_counts.get(act, 0) + 1
 
     nodes_summary = json.dumps({
         "total": len(nodes),
-        "by_type": type_counts,
+        "by_function": func_counts,
         "by_action": action_counts,
         "sample_nodes": [
-            {"name": n.get("name"), "type": n.get("node_type"), "value": n.get("likely_value_type"), "action": n.get("recommended_next_action")}
+            {"name": n.get("name"), "label": n.get("node_label"), "functions": n.get("node_function"), "value": n.get("likely_value_type"), "action": n.get("next_action")}
             for n in nodes[:15]
         ],
     }, indent=2)
 
-    classifications_summary = json.dumps({
-        "persons_direct": sum(1 for n in nodes if n.get("is_direct_person_candidate")),
-        "expandable": sum(1 for n in nodes if n.get("is_expandable_node")),
-        "rejected": sum(1 for n in nodes if n.get("recommended_next_action") == "reject"),
+    interpretations_summary = json.dumps({
+        "directly_contactable": sum(1 for n in nodes if n.get("is_directly_contactable")),
+        "contains_people": sum(1 for n in nodes if n.get("contains_people")),
+        "rejected": sum(1 for n in nodes if n.get("next_action") == "reject"),
     }, indent=2)
 
     template = read_prompt("reflect_on_batch.txt")
     system_prompt = (
         template
-        .replace("{context_brief}", json.dumps(cb, ensure_ascii=False, indent=1))
-        .replace("{search_strategy}", json.dumps(ss, ensure_ascii=False, indent=1))
+        .replace("{intent_bound_profile}", json.dumps(ibp, ensure_ascii=False, indent=1))
+        .replace("{search_lens}", json.dumps(sl, ensure_ascii=False, indent=1))
         .replace("{nodes_summary}", nodes_summary)
-        .replace("{classifications_summary}", classifications_summary)
+        .replace("{interpretations_summary}", interpretations_summary)
     )
 
     client = load_env()
-    print(f"[batch_reflection] reflecting on {len(nodes)} nodes for {args.intent}...")
+    print(f"[batch_reflection] {len(nodes)} nodes for {args.intent}...")
     result = call_llm_json(
         client,
         system_prompt=system_prompt,
@@ -81,17 +85,12 @@ def main() -> None:
 
     path = STATE_DIR / "batch_reflections.jsonl"
     br_id = result.get("batch_reflection_id") or next_id(path, "BR", "batch_reflection_id")
-    record = {
-        **result,
-        "batch_reflection_id": br_id,
-        "intent_id": args.intent,
-        "created_at": now_iso(),
-    }
+    record = {**result, "batch_reflection_id": br_id, "intent_id": args.intent, "created_at": now_iso()}
     append_jsonl(path, record)
     print(pretty(record))
 
     if not result.get("should_continue_enrichment", True):
-        print("\n⚠ BATCH QUALITY LOW — revise search strategy before enriching more")
+        print("\n** BATCH QUALITY LOW — revise profile/lens before enriching more")
 
     print(f"\nsaved -> {path}")
 

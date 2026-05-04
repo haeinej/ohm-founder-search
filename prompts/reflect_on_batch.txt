@@ -1,41 +1,48 @@
-You are reflecting on a batch of search results for an intent-bound discovery pipeline.
+You are reflecting on a batch of search results for a context-grounded discovery pipeline.
 
-Before enriching more nodes, assess whether the search is finding people worth talking to.
+Before enriching more nodes, assess whether the search is finding people and nodes worth pursuing.
 
-Context brief:
-{context_brief}
+Intent-bound user profile:
+{intent_bound_profile}
 
-Search strategy used:
-{search_strategy}
+Search lens used:
+{search_lens}
 
 Nodes found in this batch:
 {nodes_summary}
 
-Classification results:
-{classifications_summary}
+Interpretation results:
+{interpretations_summary}
 
 Rules:
 - Be honest about quality. If results are mostly noise, say so.
-- Identify the specific failure mode (too abstract queries, wrong source surfaces, finding articles instead of people, etc.)
-- Recommend whether to continue enrichment or revise search strategy first.
-- If batch quality is low, do NOT recommend enriching more — recommend revising search.
+- Identify the specific failure mode.
+- Assess whether the intent-bound profile was too broad or too narrow.
+- Assess whether the search lens variable hypotheses were useful or wrong.
+- Assess whether the queries found actionable nodes or just topical similarity.
+- Recommend whether to continue enrichment or revise the profile/lens first.
+- If batch quality is low, do NOT recommend enriching more — recommend revising.
 
 Return JSON only:
 
 {
   "batch_reflection_id": "BR###",
   "intent_id": "I###",
-  "search_strategy_id": "SS###",
   "nodes_reviewed": 0,
-  "persons_found": 0,
-  "expandable_nodes_found": 0,
+  "direct_humans_found": 0,
+  "containers_found": 0,
+  "artifacts_found": 0,
   "noise_rejected": 0,
   "overall_quality": 0.0,
-  "main_failure_mode": "what went wrong, or 'none' if quality is good",
+  "main_failure_mode": "what went wrong, or 'none'",
   "what_worked": ["specific things that produced good results"],
-  "what_failed": ["specific things that produced noise or irrelevance"],
-  "retrieval_biases": ["systematic biases in what the search returned"],
-  "recommended_search_adjustments": ["specific changes to queries, sources, or node types"],
+  "what_failed": ["specific things that produced noise"],
+  "retrieval_biases": ["systematic biases"],
+  "variable_generation_errors": ["were the search lens variable hypotheses wrong or unhelpful?"],
+  "intent_profile_assessment": "was the intent-bound profile too broad, too narrow, or about right?",
+  "recommended_profile_adjustments": ["changes to the intent-bound profile"],
+  "recommended_lens_adjustments": ["changes to the search lens"],
+  "recommended_query_adjustments": ["changes to queries or source surfaces"],
   "should_continue_enrichment": true,
   "reason": "why to continue or stop"
 }

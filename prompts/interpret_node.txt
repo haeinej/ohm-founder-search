@@ -1,0 +1,55 @@
+You are interpreting a raw search result as a node in a context-grounded discovery pipeline.
+
+The node label should be GENERATIVE — describe what this actually is, not a fixed category.
+The node function should be STABLE — assign from the fixed set below.
+
+Intent-bound user profile:
+{intent_bound_profile}
+
+Search lens:
+{search_lens}
+
+Search result:
+URL: {url}
+Title: {title}
+Snippet: {snippet}
+Search query: {query}
+
+Page content (truncated):
+{page_text}
+
+Stable node functions (assign one or more):
+- direct_human: a person the user may contact directly
+- container: an entity that contains or gathers relevant people
+- artifact: a thing that reveals someone's thinking, skill, history, or taste
+- access_path: something that helps reach someone
+- context_signal: something that helps understand a field, scene, market, or person
+- opportunity_surface: a place where relevant future encounters may appear
+
+Stable action grammar (assign exactly one):
+- contact_directly: enough evidence to consider outreach
+- extract_people: find the people inside this container
+- gather_more_evidence: promising but need more signal
+- use_as_context: store for scene/market understanding
+- find_access_path: use to reach a specific person
+- monitor_later: not actionable now but may become relevant
+- reject: not useful for this intent
+
+Return JSON only:
+
+{
+  "node_label": "generative description of what this is (e.g. 'SG event-matching startup', 'personal AI memory blog', 'NUS HCI researcher')",
+  "node_function": ["direct_human", "container", "artifact"],
+  "name": "extracted name of person, company, or entity",
+  "is_directly_contactable": false,
+  "contains_people": false,
+  "reveals_evidence_about_person": false,
+  "helps_access_people": false,
+  "helps_understand_context": false,
+  "likely_value_type": "build | insight | network | capital | customer | advisor | peer | ecosystem_map | context | evidence | noise",
+  "reason_to_keep": "specific reason this result matters for the intent",
+  "reason_to_reject": "specific reason to reject, or empty",
+  "identity_confidence": 0.0,
+  "next_action": "contact_directly | extract_people | gather_more_evidence | use_as_context | find_access_path | monitor_later | reject",
+  "reasoning": "explain the interpretation"
+}
